@@ -10,6 +10,7 @@ require_once 'Bot-API/spontena/pbphp/PBClient.php';
 require "Bot-API/vendor/autoload.php";
 include 'Services/railways.php';
 include 'dbManager.php';
+include 'Services/movieReviews.php';
 use spontena\pbphp\PBClient;
 
 	# Configuration
@@ -125,6 +126,14 @@ function performServiceRequest($request,$requester){
                 echo $seatAvailability . "\n";
                 $GLOBALS['w']->sendMessage($requester , $seatAvailability);
                 break;
+             case "#movie":
+                 unset($request[0]);
+                $movieTittle = join(" ", $request);
+                echo $movieTittle;
+                $review = getReview($movieTittle);           
+                echo $review . "\n";
+                $GLOBALS['w']->sendMessage($requester , $review);
+                break;
 //            case "#livedetailedstatus":
 //                $trainNumber = str_replace(' ', '', $request[1]);
 //                $journeyDate = str_replace(' ', '', $request[2]);
@@ -222,7 +231,6 @@ function onMessage($mynumber, $from, $id, $type, $time, $name, $body)
         $GLOBALS['w']->sendMessage($from, $replyMsg);
         return;
     }
-    echo (string)$contact[0];
     if($contact['registered'] == 'false')
     {
         completePendingRegistration($contact,$body);
