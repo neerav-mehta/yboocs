@@ -11,6 +11,7 @@ require "Bot-API/vendor/autoload.php";
 include 'Services/railways.php';
 include 'dbManager.php';
 include 'Services/movieReviews.php';
+include 'Services/cricketScore.php';
 use spontena\pbphp\PBClient;
 
 	# Configuration
@@ -133,6 +134,18 @@ function performServiceRequest($request,$requester){
                 $review = getReview($movieTittle);           
                 echo $review . "\n";
                 $GLOBALS['w']->sendMessage($requester , $review);
+                break;
+             case "#cricket":
+                $matchList = getMatchesList();           
+                echo $matchList . "\n";
+                $GLOBALS['w']->sendMessage($requester , $review);
+                break;
+             case "#livescore":
+                $team1 = $request[1];
+                $team2 = $request[2];
+                $score = getliveScore($team1,$team2);
+                echo $score.'\n';
+                $GLOBALS['w']->sendMessage($requester , $score);
                 break;
 //            case "#livedetailedstatus":
 //                $trainNumber = str_replace(' ', '', $request[1]);
