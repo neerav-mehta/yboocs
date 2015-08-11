@@ -39,6 +39,10 @@ $botname = 'dexter';
 $user_key = '0dfb3beeb74a59726d0c9ca6a1414e41';
 $pbc = new PBClient($baseURL,$app_id,$user_key);
 
+
+
+$boturl = 'http://www.botlibre.com/rest/botlibre/form-chat?instance=1121773&user=neerav.mehta@hotmail.com&password=Jgd@2421&message=';
+
 /////////////////////////////////////////////////////
 //if ($_SERVER['argv'][1] == null) {
 ////    echo "USAGE: php ".$_SERVER['argv'][0]." <number> \n\nEj: php client.php 34123456789\n\n";
@@ -190,7 +194,7 @@ function completePendingRegistration($contact,$response)
             echo $regex[$i];
             if(preg_match($regex[$i], $response) == 0)
             {
-                 $errorMessage = "Sorry, I could not understand you, Please try again";
+                 $errorMessage = "Sorry, I could not understand, Please try again";
                  $GLOBALS['w']->sendMessage($contact['phone'], $errorMessage);
                  $questionMessage = "$fieldQuestions[$i]";
                  $GLOBALS['w']->sendMessage($contact['phone'], $questionMessage);
@@ -261,25 +265,33 @@ function onMessage($mynumber, $from, $id, $type, $time, $name, $body)
     }
     else
     {
-        $talk = $GLOBALS['pbc']->talk($body,$GLOBALS['botname']);
-        if($talk->status == "ok")
-            {
-                foreach ($talk->responses as $responce) 
-                {
-                    echo "****************".$from;
-                    echo $responce . "\n";
-                    $interruptedResponce = interruptMessage($responce).
-                        
-                    
-                    $GLOBALS['w']->sendMessage($from, $responce);
-                }
-            }
-        else
-            {
-             echo "****************".$from;
-                    echo "Talk: " . $talk->message . "\n";
-                     $GLOBALS['w']->sendMessage($from , $talk->message );
-            }
+        
+        $talk = file_get_contents($GLOBALS['boturl']. str_replace(' ', '+', $body));
+        $xml = simplexml_load_string($talk);
+        $json = json_encode($xml);
+        $array = json_decode($json,TRUE);
+        echo $array;
+        echo $json;
+        $GLOBALS['w']->sendMessage($from,$array['message']);
+//        $talk = $GLOBALS['pbc']->talk($body,$GLOBALS['botname']);
+//        if($talk->status == "ok")
+//            {
+//                foreach ($talk->responses as $responce) 
+//                {
+//                    echo "****************".$from;
+//                    echo $responce . "\n";
+//                    $interruptedResponce = interruptMessage($responce).
+//                        
+//                    
+//                    $GLOBALS['w']->sendMessage($from, $responce);
+//                }
+//            }
+//        else
+//            {
+//             echo "****************".$from;
+//                    echo "Talk: " . $talk->message . "\n";
+//                     $GLOBALS['w']->sendMessage($from , $talk->message );
+//            }
     }
 
     //echo "Message from $name:\n$body\n\n";
