@@ -18,7 +18,7 @@ $fieldQuestions = array($genderQuestion,$ageQuestion,$cityQuestion,$emailQuestio
 $genderRegex = '/[1-2]/';
 $ageRegex = '/[1-5]/';
 $locationRegex = '/^[a-zA-Z ]*$/';
-$emailRegex = "/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/";
+$emailRegex = "/^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/";
 $regex = array($genderRegex,$ageRegex,$locationRegex,$emailRegex);
 
 
