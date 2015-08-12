@@ -28,6 +28,31 @@ function addContact($number, $name)
 
 }
 
+function addMessage($sender, $receiver, $message)
+{
+  $contactsDB = __DIR__ . DIRECTORY_SEPARATOR . 'contacts.db';
+  if (!file_exists($contactsDB))
+  {
+    $db = new \PDO("sqlite:" . $contactsDB, null, null, array(PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
+    $db->exec('CREATE TABLE conversation(time TEXT, FOREIGN KEY(sender) REFERENCES contact(phone), FOREIGN KEY(receiver) REFERENCES contact(phone), message TEXT)');
+  }
+  else {
+    $db = new \PDO("sqlite:" . $contactsDB, null, null, array(PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
+  }
+  $sql = 'INSERT INTO conversation (`time`, `sender`,`receiver`,`message`) VALUES (:time, :sender, :receiver, :message)';
+  $query = $db->prepare($sql);
+
+  $query->execute(
+      array(
+          ':time' => date("Y-m-d H:i:s"),
+          ':sender' => $sender,
+          ':receiver' => $receiver,
+          ':message' => $message
+      )
+  );
+
+}
+
 function updateContact($field,$value,$number)
 {
   $contactsDB = __DIR__ . DIRECTORY_SEPARATOR . 'contacts.db';

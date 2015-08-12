@@ -106,23 +106,23 @@ function performServiceRequest($request,$requester){
                 $railwayHelpString = "For pnr related information: \nSend: #pnr <your-pnr-number> \nex:#pnr 12231122211 \n\n".
                                      "For train running status: \nSend: #livestatus <TrainNumber> <date(yyyymmdd)> \n\n".
                                      "For seat availability: \nSend: #seat <train-number> <date> <source-stn-code> <dest-stn-code> <class>";
-                $GLOBALS['w']->sendMessage($requester , $railwayHelpString);
+                $replyMessage = $railwayHelpString;
             case "#help":
                 $helpString = "";
-                $GLOBALS['w']->sendMessage($requester , $helpString);
+                $replyMessage = $helpString;
                 break;
             case "#pnr":
                 $pnrNumber = str_replace(' ', '', $request[1]);
                 $pnrStatus = getPnrStatus($pnrNumber);
                 echo $pnrStatus . "\n";
-                $GLOBALS['w']->sendMessage($requester , $pnrStatus);
+                $replyMessage = $pnrStatus;
                 break;
             case "#livestatus":
                 $trainNumber = str_replace(' ', '', $request[1]);
                 $journeyDate = str_replace(' ', '', $request[2]);
                 $runningStatus = getLiveRunningStatus($trainNumber,$journeyDate);
                 echo $runningStatus . "\n";
-                $GLOBALS['w']->sendMessage($requester , $runningStatus);
+                $replyMessage = $runningStatus;
                 break;
             case "#seat":
                 $trainNumber = str_replace(' ', '', $request[1]);
@@ -132,7 +132,7 @@ function performServiceRequest($request,$requester){
                 $class = str_replace(' ', '', $request[5]);
                 $seatAvailability = getSeatAvailability($trainNumber,$journeyDate,$sourceStation,$destStation,$class);
                 echo $seatAvailability . "\n";
-                $GLOBALS['w']->sendMessage($requester , $seatAvailability);
+                $replyMessage = $seatAvailability;
                 break;
              case "#movie":
                  unset($request[0]);
@@ -140,19 +140,19 @@ function performServiceRequest($request,$requester){
                 echo $movieTittle;
                 $review = getReview($movieTittle);           
                 echo $review . "\n";
-                $GLOBALS['w']->sendMessage($requester , $review);
+                $replyMessage = $review;
                 break;
              case "#cricket":
                 $matchList = getMatchesList();           
                 echo $matchList . "\n";
-                $GLOBALS['w']->sendMessage($requester , $review);
+                $replyMessage = $matchList;
                 break;
              case "#livescore":
                 $team1 = $request[1];
                 $team2 = $request[2];
                 $score = getliveScore($team1,$team2);
                 echo $score.'\n';
-                $GLOBALS['w']->sendMessage($requester , $score);
+                $replyMessage = $score;
                 break;
 //            case "#livedetailedstatus":
 //                $trainNumber = str_replace(' ', '', $request[1]);
@@ -163,11 +163,13 @@ function performServiceRequest($request,$requester){
 //                break;
 
             default:
-                $defaultResponse = "There is no such service, Please enter a valid service name or #help for assistance";
+                $defaultResponse = $GLOBALS['INVALID_SERVICE'];
                 echo $defaultResponse . "\n";
-                $GLOBALS['w']->sendMessage($requester , $defaultResponse);
+                $replyMessage = $defaultResponse;
                 break;
-        }        
+        } 
+        addMessage('Genie',$requester, $replyMessage);
+        $GLOBALS['w']->sendMessage($requester, $replyMessage);
 }
 
 function startsWith($haystack, $needle) {
@@ -234,7 +236,7 @@ function onMessage($mynumber, $from, $id, $type, $time, $name, $body)
 {
     $number = ExtractNumber($from);
     $contact = getUserInfo($number);
-    
+    addMessage($from, 'Genie', $body);
     if(!$contact)
     {
         addContact ($number, $name);
@@ -270,6 +272,7 @@ function onMessage($mynumber, $from, $id, $type, $time, $name, $body)
         echo $array;
         echo $json;
         $GLOBALS['w']->sendMessage($from,$array['message']);
+        addMessage('Genie',$from, $array['message']);
 //        $talk = $GLOBALS['pbc']->talk($body,$GLOBALS['botname']);
 //        if($talk->status == "ok")
 //            {
