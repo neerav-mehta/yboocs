@@ -12,6 +12,8 @@ include 'Services/railways.php';
 include 'dbManager.php';
 include 'Services/movieReviews.php';
 include 'Services/cricketScore.php';
+
+include 'GenieConstants.php';
 use spontena\pbphp\PBClient;
 
 	# Configuration
@@ -95,6 +97,7 @@ $w->sendPresenceSubscription($target); // Nos suscribimos a la presencia del usu
 
 $pn = new ProcessNode($w, $target);
 $w->setNewMessageBind($pn);
+
 
 
 function performServiceRequest($request,$requester){
@@ -194,7 +197,7 @@ function completePendingRegistration($contact,$response)
             echo $regex[$i];
             if(preg_match($regex[$i], $response) == 0)
             {
-                 $errorMessage = "Sorry, I could not understand, Please try again";
+                 $errorMessage = $GLOBALS['ERROR_MESSAGE'];
                  $GLOBALS['w']->sendMessage($contact['phone'], $errorMessage);
                  $questionMessage = "$fieldQuestions[$i]";
                  $GLOBALS['w']->sendMessage($contact['phone'], $questionMessage);
@@ -213,16 +216,11 @@ function completePendingRegistration($contact,$response)
                 else
                 {
                     updateContact('registered', 'true', $contact['phone']);
-                    $thanksMessage = "Thank you for the information.";
+                    $thanksMessage = $GLOBALS['THANKYOU_MESSAGE'];
                     $GLOBALS['w']->sendMessage($contact['phone'], $thanksMessage);
-                    $introduction = "I am Dexter, your personal assistant. I can assist you in variety of stuff like\n
-                        Weather Information \n
-                        Movie Reviews \n
-                        Stock Quotes \n
-                        Live Scores \n
-                        Railway Enquiry \n";
+                    $introduction = $GLOBALS['INTRODUCTION'];
                     $GLOBALS['w']->sendMessage($contact['phone'], $introduction);
-                    $help = "Send #help for more information";
+                    $help = $GLOBALS['HELP'];
                     $GLOBALS['w']->sendMessage($contact['phone'], $help);
                     
                     return;
@@ -241,8 +239,7 @@ function onMessage($mynumber, $from, $id, $type, $time, $name, $body)
     {
         addContact ($number, $name);
         $contact = getUserInfo($number);
-        $replyMsg = "Hi ".$name.", It seems we are meeting for the first time.\n".
-        "To assist you better I will ask you a few questions. To start with,";
+        $replyMsg = "Hi ".$name. $GLOBALS['WELCOME_MESSAGE'];
         $GLOBALS['w']->sendMessage($from, $replyMsg);
         $replyMsg = $GLOBALS[fieldQuestions][0];
         $GLOBALS['w']->sendMessage($from, $replyMsg);
