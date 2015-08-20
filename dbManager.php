@@ -34,7 +34,7 @@ function addMessage($sender, $receiver, $message)
   if (!file_exists($contactsDB))
   {
     $db = new \PDO("sqlite:" . $contactsDB, null, null, array(PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
-    $db->exec('CREATE TABLE conversation(time TEXT, FOREIGN KEY(sender) REFERENCES contact(phone), FOREIGN KEY(receiver) REFERENCES contact(phone), message TEXT)');
+    $db->exec('CREATE TABLE conversation(time TEXT, sender TEXT, receiver TEXT,message TEXT, FOREIGN KEY(sender) REFERENCES contact(phone), FOREIGN KEY(receiver) REFERENCES contact(phone), message TEXT)');
   }
   else {
     $db = new \PDO("sqlite:" . $contactsDB, null, null, array(PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
@@ -51,6 +51,69 @@ function addMessage($sender, $receiver, $message)
       )
   );
 
+}
+
+function setMessageContext($main_menu, $sub_menu, $user)
+{
+
+  $contactsDB = __DIR__ . DIRECTORY_SEPARATOR . 'contacts.db';
+  if (!file_exists($contactsDB))
+  {
+    $db = new \PDO("sqlite:" . $contactsDB, null, null, array(PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
+    $db->exec('CREATE TABLE context(time TEXT, main_menu TEXT, sub_menu TEXT, user TEXT, FOREIGN KEY(user) REFERENCES contact(phone))');
+  }
+  else {
+    $db = new \PDO("sqlite:" . $contactsDB, null, null, array(PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
+  }
+  $sql = 'INSERT INTO context (`time`, `main_menu`,`sub_menu`,`user`) VALUES (:time, :main_menu, :sub_menu, :user)';
+  $query = $db->prepare($sql);
+
+  $query->execute(
+      array(
+          ':time' => date("Y-m-d H:i:s"),
+          ':main_menu' => $main_menu,
+          ':sub_menu' => $sub_menu,
+          ':user' => $user
+      )
+  );
+
+}
+
+function updateMessageContext($main_menu, $sub_menu, $user, $lastMessage = NULL)
+{
+  if($lastMessage != NULL)
+  {  
+      $sql = "UPDATE context SET time= '".date("Y-m-d H:i:s")."', main_menu= '".$main_menu."', sub_menu= '".$sub_menu."',  last_message= '".$lastMessage."' WHERE user = ".$user;      
+  }
+  else
+  {
+        $sql = "UPDATE context SET time= '".date("Y-m-d H:i:s")."', main_menu= '".$main_menu."', sub_menu= '".$sub_menu."' WHERE user = ".$user;
+  }
+  $contactsDB = __DIR__ . DIRECTORY_SEPARATOR . 'contacts.db';
+    $db = new \PDO("sqlite:" . $contactsDB, null, null, array(PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
+
+  
+  echo "/n/n/n/n***********".$sql;
+  $query = $db->prepare($sql);
+
+  $query->execute();
+
+}
+
+function getMessageContext($contact)
+{
+  $contactsDB = __DIR__ . DIRECTORY_SEPARATOR . 'contacts.db';
+  if (file_exists($contactsDB))
+  {
+      $cDB = new \PDO("sqlite:" . $contactsDB, null, null, array(PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
+      $sql = 'SELECT * FROM context WHERE user = :contact';
+      $query = $cDB->prepare($sql);
+      $query->execute(array(':contact' => $contact));
+      $contact = $query->fetchAll();
+      $contact = $contact[0];
+      print_r($contact);
+      return $contact;
+  }
 }
 
 function updateContact($field,$value,$number)

@@ -60,15 +60,3 @@ class PubSub
 			unset( self::$events[ $name ] );
 	}
 }
-// Basic usage
-PubSub::subscribe( 'beforeSave', function ($helo)
-{
-        echo $helo;
-	echo 'PubSub::beforeSave';
-} );
-PubSub::subscribe( 'afterSave', function ()
-{
-	echo 'PubSub::afterSave';
-} );
-PubSub::publish( 'beforeSave',"Helo" );
-PubSub::unsubscribe( 'beforeSave' );
