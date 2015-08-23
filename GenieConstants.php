@@ -72,7 +72,12 @@ class GenieConstants{
     public static  $MAIN_MENU_STRING;
     public static  $THANKYOU_SERVICE_MESSAGE;
     
-    
+    public static  $SHOPPING_MENU_CONTEXT;
+    public static  $postShoppingSearch;
+
+
+
+
     public static function searchElement($from, $searchElement,$property)
    { 
       foreach ($from as $key=>$value)
@@ -132,6 +137,11 @@ class GenieConstants{
         self::$SERVICE_REQUEST_COMPLETE = "SERVICE_REQUEST_COMPLETE";
 
         self::$PARENT_MENU_CONTEXT  = [];
+        
+        self::$SHOPPING_MENU_CONTEXT = [
+            '1' => new contextMenu('1','SEARCH PRODUCT',NULL,'getProductInformation','getProductInformation',self::$postShoppingSearch),
+            '2' => new contextMenu('2','LATEST OFFERS',NULL,'getLatestOffers','getLatestOffers')
+       ];
                 
         self::$CRICKET_MENU_CONTEXT = [
             '1' => new contextMenu('1','LIVE SCORE',NULL,'askForLiveScore','getLiveScore'),
@@ -141,10 +151,14 @@ class GenieConstants{
         
         self::$postMovieServiceMessage = 'You can send "#movie <movie-name>" to get movie information in single message';
         self::$postCricketServiceMessage = 'You can send "#cricket <team1,team2>" to get latest match score information';
+        
+        self::$postShoppingSearch = 'You can also send #shopping <product-name> to get updated product information.';
         self::$VAS_MENU_CONTEXT = [
             '1' => new contextMenu('1','MOVIE INFORMATION',NULL,'askForMovieInformation','getMovieReview',self::$postMovieServiceMessage),
             '2' => new contextMenu('2','CRICKET INFORMATION',NULL,'askForMatchInformation','getLiveScore',self::$postCricketServiceMessage)
        ];
+        
+
         
 
         self::$MAIN_MENU_CONTEXT = [
@@ -152,9 +166,9 @@ class GenieConstants{
            '1' => new contextMenu('1','Weather',self::$WEATHER_MENU_CONTEXT,NULL),
 //           '3' => 'STOCK',
            '5' => new contextMenu('5','Railway',self::$RAILWAY_MENU_CONTEXT,null),
-//           '6' => 'SHOPPING',
+           '6' => new contextMenu('6','Shopping',self::$SHOPPING_MENU_CONTEXT,null),
            '2' => new contextMenu('2','VAS',self::$VAS_MENU_CONTEXT,null),
-           '8' => new contextMenu('8','UserManagement',self::$REGISTRATION_MENU_CONTEXT,null),
+           '8' => new contextMenu('8','UserManagement',self::$REGISTRATION_MENU_CONTEXT,null)
        ];
 
 

@@ -3,6 +3,7 @@
 include 'Services/UserManagement.php';      
 include 'Services/Railway.php'; 
 include 'Services/Cricket.php'; 
+include 'Services/Shopping.php'; 
 include 'Services/VAS.php'; 
 function searchElement($from, $searchElement,$property)
    {
@@ -158,8 +159,9 @@ class ServiceController{
                 {
                     if(GenieConstants::searchElement(GenieConstants::$MAIN_MENU_CONTEXT,$body,'id') != NULL)
                     {     
-                        PubSub::publish(GenieConstants::$MAIN_MENU_CONTEXT[$body]->menuItem,$callBackFunction,$contact); 
                         updateMessageContext($body, NULL, $contact['phone']);
+                        PubSub::publish(GenieConstants::$MAIN_MENU_CONTEXT[$body]->menuItem,$callBackFunction,$contact); 
+                   
                     }
                     else {
                         MessaggingController::sendMessage($contact, GenieConstants::$INVALID_SERVICE);
