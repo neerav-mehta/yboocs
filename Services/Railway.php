@@ -28,7 +28,7 @@ class Railway
                          2 for Train Live Running Status \n
                          3 for Seat Availablility \n
                          4 to connect to the live agent";
-    public static $HELP = "Anytime you can press help to go to the main menu";
+    public static $mainMenuRedirectString = "Anytime you can type #mainmenu to go to the main menu";
 
 
     public static function initializeService($requester)
@@ -39,8 +39,8 @@ class Railway
         $menu = self::$RAILWAY_OPTIONS_MENU;
         MessaggingController::sendMessage($requester, $menu);
 
-        $help = self::$HELP;
-        MessaggingController::sendMessage($requester, $help); 
+        $mainMenuRedirectString = self::$mainMenuRedirectString;
+        MessaggingController::sendMessage($requester, $mainMenuRedirectString); 
     }
     
     public static function askForPnrStatus($requester)
@@ -51,7 +51,7 @@ class Railway
     
     public static function getPnrStatus($requester, $pnrNumber)
     {
-        $url = self::$pnrURL.$pnrNumberf.'/apikey/'.self::$railwayApikey.'/';
+        $url = self::$pnrURL.$pnrNumber.'/apikey/'.self::$railwayApikey.'/';
         
         echo $url;
         $pnrStatus = file_get_contents($url);

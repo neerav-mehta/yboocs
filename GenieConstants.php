@@ -9,13 +9,15 @@ class contextMenu
     public $callBackMethod;
     public $requestServer;
     public $postServiceMessage;
-   function __construct($id,$menuItem,$subMenu,$method,$requestServer = NULL,$postServiceMessage=NULL) {
+    public $shortCutToken;
+   function __construct($id,$menuItem,$subMenu,$method,$requestServer = NULL,$postServiceMessage=NULL,$shortCutToken=NULL) {
        $this->id = $id;
        $this->menuItem = $menuItem;
        $this->subMenu = $subMenu;
        $this->callBackMethod = $method;
        $this->requestServer = $requestServer;
        $this->postServiceMessage = $postServiceMessage;
+       $this->shortCutToken = $shortCutToken;
    }
    
    function toString()
@@ -99,9 +101,9 @@ class GenieConstants{
     static function init()
       {
         self::$RAILWAY_MENU_CONTEXT = [
-            '1' => new contextMenu('1','PNR',NULL,'askForPnrStatus','getPnrStatus'),
-            '2' => new contextMenu('2','LIVE STATUS',NULL,'askForLiveRunningStatus','getLiveRunningStatus'),
-            '3' => new contextMenu('3','SEAT INFORMATION',NULL,'askForSeatInformation','getSeatAvailability')
+            '1' => new contextMenu('1','PNR',NULL,'askForPnrStatus','getPnrStatus',NULL,"#pnr"),
+            '2' => new contextMenu('2','LIVE STATUS',NULL,'askForLiveRunningStatus','getLiveRunningStatus',NULL,'#livestatus'),
+            '3' => new contextMenu('3','SEAT INFORMATION',NULL,'askForSeatInformation','getSeatAvailability',NULL,'#seatInfo')
         ];
         
         self::$GENIE = "GENIE";
@@ -139,8 +141,8 @@ class GenieConstants{
         self::$PARENT_MENU_CONTEXT  = [];
         
         self::$SHOPPING_MENU_CONTEXT = [
-            '1' => new contextMenu('1','SEARCH PRODUCT',NULL,'getProductInformation','getProductInformation',self::$postShoppingSearch),
-            '2' => new contextMenu('2','LATEST OFFERS',NULL,'getLatestOffers','getLatestOffers')
+            '1' => new contextMenu('1','SEARCH PRODUCT',NULL,'getProductInformation','getProductInformation',self::$postShoppingSearch,'#shopping'),
+            '2' => new contextMenu('2','LATEST OFFERS',NULL,'getLatestOffers','getLatestOffers','#offers')
        ];
                 
         self::$CRICKET_MENU_CONTEXT = [
@@ -149,13 +151,13 @@ class GenieConstants{
        ];
         
         
-        self::$postMovieServiceMessage = 'You can send "#movie <movie-name>" to get movie information in single message';
+        self::$postMovieServiceMessage = 'You can also send "#movie <movie-name>" to get movie information in single message';
         self::$postCricketServiceMessage = 'You can send "#cricket <team1,team2>" to get latest match score information';
         
         self::$postShoppingSearch = 'You can also send #shopping <product-name> to get updated product information.';
         self::$VAS_MENU_CONTEXT = [
-            '1' => new contextMenu('1','MOVIE INFORMATION',NULL,'askForMovieInformation','getMovieReview',self::$postMovieServiceMessage),
-            '2' => new contextMenu('2','CRICKET INFORMATION',NULL,'askForMatchInformation','getLiveScore',self::$postCricketServiceMessage)
+            '1' => new contextMenu('1','MOVIE INFORMATION',NULL,'askForMovieInformation','getMovieReview',self::$postMovieServiceMessage,'#movie'),
+            '2' => new contextMenu('2','CRICKET INFORMATION',NULL,'askForMatchInformation','getLiveScore',self::$postCricketServiceMessage,'#cricket')
        ];
         
 
@@ -171,24 +173,23 @@ class GenieConstants{
            '8' => new contextMenu('8','UserManagement',self::$REGISTRATION_MENU_CONTEXT,null)
        ];
 
-
-
         self::$INTRODUCTION = "I am Genie, your whatsapp based personal assistant.\n
-                               How can I assist you today?
-                               1 for Weather Information \n
-                               2 for Value Added Services \n
-                               3 for Stock Quotes \n
-                               5 for Railway Enquiry \n
-                               6 for Shopping Assistance \n
-                               7 for Phone Recharge";
+            How can I assist you today?
+            1 for Weather Information \n
+            2 for Value Added Services \n
+            3 for Stock Quotes \n
+            5 for Railway Enquiry \n
+            6 for Shopping Assistance \n
+            7 for Phone Recharge";
 
         
-        self::$MAIN_MENU_STRING = "1 for Weather Information \n
-                                   2 for Value Added Services \n
-                                   3 for Stock Quotes \n
-                                   5 for Railway Enquiry \n
-                                   6 for Shopping Assistance \n
-                                   7 for Phone Recharge";
+        self::$MAIN_MENU_STRING = "What can I do for you?
+            1 for Weather Information \n
+            2 for Value Added Services \n
+            3 for Stock Quotes \n
+            5 for Railway Enquiry \n
+            6 for Shopping Assistance \n
+            7 for Phone Recharge";
 
         self::$HELP = "Send #help to connect to our service agent";
 
@@ -210,14 +211,14 @@ class GenieConstants{
         self::$THANKYOU_MESSAGE = "Thank you for the information.";
 
         self::$userFields = array('gender','age','location','email');
-        self::$genderQuestion = "Alright, May I know your gender please?\n1 for Male\n2 for Female";
+        self::$genderQuestion = "May I know your gender please?\n1 for Male\n2 for Female";
         self::$ageQuestion = 'Tell me which age group do you belong to:
            1 for <18 yrs
            2 for 18-25 yrs
            3 for 26-39 yrs
            4 for 40-60 yrs
            5 for >60 yrs';
-        self::$cityQuestion = 'May I know which city you belong to?';
+        self::$cityQuestion = 'Alright, May I know which city you belong to?';
         self::$emailQuestion = 'One last question! Tell me your email address.';
         self::$fieldQuestions = array(self::$genderQuestion,  self::$ageQuestion,  self::$cityQuestion,  self::$emailQuestion);
 

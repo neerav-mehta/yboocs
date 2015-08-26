@@ -18,7 +18,7 @@ class Shopping
     public static $askForProductInformation = "So May I know what are you planning to shop today?";
     public static $ShoppingWelcomeMessage = "Welcome to shopping assistance service
                                              I have tieups with Snapdeal, Flipkart, Amazon, Paytm etc and I can provide you best prices, current offers etc";
-    public static $HELP = "Anytime you can press help to go to the main menu";
+    public static $mainMenuRedirectString = "Anytime you can type #mainmenu to go to the main menu";
     
     public static $fKAffiliateId = 'neeravmeh';
     public static $fKAffiliateToken = '3de426c2b5a346329ae76537bcc8f5db';
@@ -48,8 +48,8 @@ class Shopping
         $welcomeMessage = self::$ShoppingWelcomeMessage;
         MessaggingController::sendMessage($requester, $welcomeMessage);
         
-        $help = self::$HELP;
-        MessaggingController::sendMessage($requester, $help); 
+        $mainMenuRedirectString = self::$mainMenuRedirectString;
+        MessaggingController::sendMessage($requester, $mainMenuRedirectString); 
 
         $menu = self::$askForProductInformation;
         MessaggingController::sendMessage($requester, $menu);

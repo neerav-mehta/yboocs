@@ -24,9 +24,11 @@ class VAS
     public static $homeCountry = 'India';
     public static $askForLiveScoreString = 'Between which two team you want to get the live match score information?(team1,team2)';
 
+    public static $mainMenuRedirectString = "Anytime you can type #mainmenu to go to the main menu";
     public static function initializeService($requester)
     {
         MessaggingController::sendMessage ($requester, self::$VAS_WELCOME_TEXT);
+        MessaggingController::sendMessage ($requester, self::$mainMenuRedirectString);
     }
     
     
@@ -109,13 +111,17 @@ class VAS
     }
     
     public static function getMovieReview($requester,$movieTitle){
+        
+        echo "\n\n\n\n\n";
+        var_dump($movieTitle);
+        echo "\n\n\n\n\n";
         $movieTitle = str_replace(' ', '+', $movieTitle);
         $url = self::$omdbURL.$movieTitle.'&y=&plot=short&r=json';
         $movieReview = file_get_contents($url);
         if($movieReview)
             {
                 $json = json_decode($movieReview, true);
-                echo $json;
+             
                 if($json['Response'] == 'false')
                     MessaggingController::sendMessage ($requester, $json['Error']);
                 else
