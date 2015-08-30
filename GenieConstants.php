@@ -29,6 +29,21 @@ class contextMenu
         
 }
 
+class serviceAgent
+{
+    public $agentName;
+    public $agentNumber;
+    public $agentAvailabilityStartTime;
+    public $agentAvailabilityEndTime;
+    public $agentServiceRequests;
+    
+    function __construct($agentName,$agentNumber,$agentAvailabilityTime) {
+       $this->id = $agentName;
+       $this->menuItem = $agentNumber;
+       $this->subMenu = $agentAvailabilityTime;
+   }
+}
+
 
 class GenieConstants{
     public static  $RAILWAY_MENU_CONTEXT;
@@ -36,8 +51,10 @@ class GenieConstants{
     public static  $REGISTRATION_MENU_CONTEXT;
     public static  $PARENT_MENU_CONTEXT;
     public static  $CRICKET_MENU_CONTEXT;
+    public static  $FEEDBACK_MENU_CONTEXT;
     public static  $VAS_MENU_CONTEXT;
     public static  $MAIN_MENU_CONTEXT;
+    public static  $MOVIE_MENU_CONTEXT;
     public static  $INTRODUCTION;
     public static  $HELP;
     public static  $WELCOME_MESSAGE;
@@ -76,9 +93,13 @@ class GenieConstants{
     
     public static  $SHOPPING_MENU_CONTEXT;
     public static  $postShoppingSearch;
+    public static  $postWeatherInfo;
+    public static  $postFeedbackMessage;
+    public static  $postPNRMessage;
 
 
-
+    public static  $serviceAgentList;
+    
 
     public static function searchElement($from, $searchElement,$property)
    { 
@@ -100,18 +121,26 @@ class GenieConstants{
     
     static function init()
       {
+        self::$postWeatherInfo = 'You can also send "#weather <city-name>" to get latest weather information in single message';
+        self::$postMovieServiceMessage = 'You can also send "#movie <movie-name>" to get movie information in single message';
+        self::$postCricketServiceMessage = 'You can send "#cricket <team1,team2>" to get latest match score information';
+        self::$postFeedbackMessage = 'You message is recorded. Thanks for submitting your feedback';
+        self::$postShoppingSearch = 'You can also send #shopping <product-name> to get updated product information.';
+        self::$postPNRMessage = 'For quick PNR information you can also send "#pnr <pnr-number>"'; 
         self::$RAILWAY_MENU_CONTEXT = [
-            '1' => new contextMenu('1','PNR',NULL,'askForPnrStatus','getPnrStatus',NULL,"#pnr"),
-            '2' => new contextMenu('2','LIVE STATUS',NULL,'askForLiveRunningStatus','getLiveRunningStatus',NULL,'#livestatus'),
-            '3' => new contextMenu('3','SEAT INFORMATION',NULL,'askForSeatInformation','getSeatAvailability',NULL,'#seatInfo')
+            '1' => new contextMenu('1','PNR',NULL,'askForPnrStatus','getPnrStatus',self::$postPNRMessage,"#pnr"),
+            '2' => new contextMenu('2','LIVE STATUS',NULL,'askForLiveRunningStatus','getLiveRunningStatus',NULL,'#livestatus')
         ];
         
+        
+        self::$serviceAgentList = [
+            new serviceAgent('Neerav Mehta','919728923923','9','20')
+        ];
         self::$GENIE = "GENIE";
         
         self::$WEATHER_MENU_CONTEXT = [
-            '1' => 'PNR',
-            '2' => 'LIVE_STATUS',
-            '3' => 'SEAT_INFORMATION',
+            '1' => new contextMenu('1','WEATHER INFORMATION',NULL,'askForWeatherLocation','getWeatherInformation',self::$postWeatherInfo,"#weather"),
+            '2' => new contextMenu('2','QUIT',NULL,'exitMenu','exitMenu',self::$postWeatherInfo,"#weather")
         ];
         
         self::$GENDER_SUB_MENU_STRING = 'gender';
@@ -144,54 +173,58 @@ class GenieConstants{
             '1' => new contextMenu('1','SEARCH PRODUCT',NULL,'getProductInformation','getProductInformation',self::$postShoppingSearch,'#shopping'),
             '2' => new contextMenu('2','LATEST OFFERS',NULL,'getLatestOffers','getLatestOffers','#offers')
        ];
-                
-        self::$CRICKET_MENU_CONTEXT = [
-            '1' => new contextMenu('1','LIVE SCORE',NULL,'askForLiveScore','getLiveScore'),
-            '2' => new contextMenu('2','RESET SERVICE MENU',NULL,'resetServiceMenu','resetServiceMenu')
-       ];
+              
         
+       self::$CRICKET_MENU_CONTEXT = [
+            '1' => new contextMenu('1','CRICKET SCORE',NULL,'askForLiveScore','getLiveScore',self::$postCricketServiceMessage,"#cricket"),
+            '2' => new contextMenu('2','QUIT',NULL,'exitMenu','exitMenu',self::$postCricketServiceMessage,"#cricket")
+        ];
         
-        self::$postMovieServiceMessage = 'You can also send "#movie <movie-name>" to get movie information in single message';
-        self::$postCricketServiceMessage = 'You can send "#cricket <team1,team2>" to get latest match score information';
-        
-        self::$postShoppingSearch = 'You can also send #shopping <product-name> to get updated product information.';
+
         self::$VAS_MENU_CONTEXT = [
             '1' => new contextMenu('1','MOVIE INFORMATION',NULL,'askForMovieInformation','getMovieReview',self::$postMovieServiceMessage,'#movie'),
             '2' => new contextMenu('2','CRICKET INFORMATION',NULL,'askForMatchInformation','getLiveScore',self::$postCricketServiceMessage,'#cricket')
        ];
         
-
+       self::$MOVIE_MENU_CONTEXT = [
+            '1' => new contextMenu('1','MOVIE INFORMATION',NULL,'getMovieReview','getMovieReview',self::$postMovieServiceMessage,'#movie')
+       ];
         
+        self::$FEEDBACK_MENU_CONTEXT = [
+            '1' => new contextMenu('1','FEEDBACK',NULL,'submitFeedback','submitFeedback',self::$postFeedbackMessage,'#feedback'),
+            '2' => new contextMenu('2','CRICKET INFORMATION',NULL,'askForMatchInformation','getLiveScore',self::$postCricketServiceMessage,'#cricket')
+       ];
 
         self::$MAIN_MENU_CONTEXT = [
            '0' => new contextMenu('0','Parent',self::$PARENT_MENU_CONTEXT,NULL),
            '1' => new contextMenu('1','Weather',self::$WEATHER_MENU_CONTEXT,NULL),
-//           '3' => 'STOCK',
-           '5' => new contextMenu('5','Railway',self::$RAILWAY_MENU_CONTEXT,null),
-           '6' => new contextMenu('6','Shopping',self::$SHOPPING_MENU_CONTEXT,null),
-           '2' => new contextMenu('2','VAS',self::$VAS_MENU_CONTEXT,null),
+           '2' => new contextMenu('2','Movie',self::$MOVIE_MENU_CONTEXT,null),
+           '3' => new contextMenu('3','Cricket',self::$CRICKET_MENU_CONTEXT,null),
+           '4' => new contextMenu('4','Railway',self::$RAILWAY_MENU_CONTEXT,null),
+           '5' => new contextMenu('5','Shopping',self::$SHOPPING_MENU_CONTEXT,null),
+           '6' => new contextMenu('6','Feedback',self::$FEEDBACK_MENU_CONTEXT,null),
            '8' => new contextMenu('8','UserManagement',self::$REGISTRATION_MENU_CONTEXT,null)
        ];
 
         self::$INTRODUCTION = "I am Genie, your whatsapp based personal assistant.\n
             How can I assist you today?
             1 for Weather Information \n
-            2 for Value Added Services \n
-            3 for Stock Quotes \n
-            5 for Railway Enquiry \n
-            6 for Shopping Assistance \n
-            7 for Phone Recharge";
+            2 for Movie Information \n
+            3 for Cricket Scores \n
+            4 for Railway Enquiry \n
+            5 for Shopping Assistance \n
+            6 for Feedback";
 
         
         self::$MAIN_MENU_STRING = "What can I do for you?
             1 for Weather Information \n
-            2 for Value Added Services \n
-            3 for Stock Quotes \n
-            5 for Railway Enquiry \n
-            6 for Shopping Assistance \n
-            7 for Phone Recharge";
+            2 for Movie Information \n
+            3 for Cricket Scores \n
+            4 for Railway Enquiry \n
+            5 for Shopping Assistance \n
+            6 for Feedback";
 
-        self::$HELP = "Send #help to connect to our service agent";
+        self::$HELP = "Send #help to connect to the service agent";
 
         self::$WELCOME_MESSAGE = ", It seems we are meeting for the first time.\n".
                "To assist you better I will ask you a few questions. To start with,";
@@ -204,7 +237,7 @@ class GenieConstants{
 
         self::$INVALID_INFORMATION = "Invalid information, please check again";
 
-        self::$INVALID_SERVICE = "There is no such service, Please enter a valid service name or #help for assistance";
+        self::$INVALID_SERVICE = "There is no such service, Please enter a valid service name";
 
         self::$ERROR_MESSAGE = "Sorry, I could not understand, Please try again";
 

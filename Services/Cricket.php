@@ -15,43 +15,43 @@ class Cricket
     
     public static $homeCountry = 'India';
     public static $askForLiveScoreString = 'Between which two team you want to get the live match score information?(team1,team2)';
+    public static $CRICKET_OPTION_MESSAGE = "Do you want to get score of any other match
+        1 for Yes
+        2 for No";
     
-    public static function initializeService($requester,$request){
+    public static function initializeService($requester){
+       
         $matchList = file_get_contents(self::$cricInfoURL);
+        $scoreAvailable = false;
         if($matchList)
             {
                 $json = json_decode($matchList, true);
-                echo $json;
                 foreach ($json as $value) {
                     echo $value['t1'].'/n';
                     echo $value['t2'].'/n/n';
 
-                    if(((stripos($value['t1'],self::$homeCountry) > -1) ||stripos($value['t1'],  self::$homeCountry) > -1))
+                    if(((stripos($value['t1'],self::$homeCountry) > -1) ||stripos($value['t2'],  self::$homeCountry) > -1))
                     {
-                        $matchScoreURL =  self::$homeCountry . '?id='.$value['id'];
+                        $matchScoreURL = self::$cricInfoURL.'?id='.$value['id'];
                         $matchScore = file_get_contents($matchScoreURL);
                         $matchScore = json_decode($matchScore, true);
                         $score =  $matchScore['0']['de'];
-                        MessaggingController::sendMessage($requester, $message);
-                        $message = "Do you want to know the score of any other match?\n
-                                    1 For Yes\n
-                                    2 for No";
-                        MessaggingController::sendMessage($requester, $message);
-                        return;
+                        MessaggingController::sendMessage($requester, $score);
+                        $scoreAvailable = true;
                     }
                 }
-                $message = "No cricket match of ".self::$homeCountry." happening right now.\n
-                            Do you want to know the score of any other match?\n
-                            1 For Yes\n
-                            2 for No";
-               
+                if(!$scoreAvailable)
+                {
+                    $message = "No cricket match of ".self::$homeCountry." happening right now.\n";
+                    MessaggingController::sendMessage($requester, $message);
+                }
             }
             else
             {
-                $message =  "Service temporarily not available, please try after some time";
+                $message = GenieConstants::$SERVICE_UNAVAILABLE;
+                MessaggingController::sendMessage($requester, $message);
             }
-            MessaggingController::sendMessage($requester, $message);
-            PubSub::publish(GenieConstants::$SERVICE_REQUEST_COMPLETE,$requester);  
+            MessaggingController::sendMessage($requester, self::$CRICKET_OPTION_MESSAGE);
     }
 
     public static function askForLiveScore($requester)
@@ -62,11 +62,12 @@ class Cricket
     
     
     public static function getLiveScore($requester,$request){
-        $requestParams = explode(",", $request);
+      $requestParams = explode(",", $request);
+      $scoreAvailable = false;
         $team1 = $requestParams[0];
         $team2 = $requestParams[1];
         $matchList = file_get_contents(self::$cricInfoURL);
-        $message =  "Service temporarily not available, please try after some time";
+        $message =  "Sorry, this match information is not available.";
         if($matchList)
             {
                 $json = json_decode($matchList, true);
@@ -82,27 +83,23 @@ class Cricket
                         $matchScore = file_get_contents($matchScoreURL);
                         $matchScore = json_decode($matchScore, true);
                         $score =  $matchScore['0']['de'];
+                        $scoreAvailable = true;
                         MessaggingController::sendMessage($requester, $score);
-                        $message = "Do you want to know the score of any other match?\n
-                                    1 For Yes\n
-                                    2 for No";
-                        setMessageContext(GenieConstants::searchElement(GenieConstants::$MAIN_MENU_CONTEXT,GenieConstants::$CRICKET_MENU_CONTEXT,'subMenu'),NULL, $requester['phone']);
-                        
                     }
-                }          
-               
+                }               
             }
             else
             {
                 $message =  "Service temporarily not available, please try after some time";
             }
+            if(!$scoreAvailable)
             MessaggingController::sendMessage($requester, $message);
-            $otherQuery = "Do you want to know the score of any other match?\n
-                                    1 For Yes\n
-                                    2 for No";
-            MessaggingController::sendMessage($requester, $otherQuery);
-            updateMessageContext(GenieConstants::searchElement(GenieConstants::$MAIN_MENU_CONTEXT,GenieConstants::$CRICKET_MENU_CONTEXT,'subMenu'),NULL, $requester['phone']);
+            PubSub::publish(GenieConstants::$SERVICE_REQUEST_COMPLETE,$requester);
 
+    }
+    public static function exitMenu($requester)
+    {
+        PubSub::publish(GenieConstants::$SERVICE_REQUEST_COMPLETE,$requester);
     }
 }
 

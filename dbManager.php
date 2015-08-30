@@ -179,6 +179,31 @@ function findNicknameByPhone($phone)
   }
 }
 
+function addFeedBack($contact,$feedback)
+{
+    
+  $contactsDB = __DIR__ . DIRECTORY_SEPARATOR . 'contacts.db';
+  if (!file_exists($contactsDB))
+  {
+    $db = new \PDO("sqlite:" . $contactsDB, null, null, array(PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
+    $db->exec('CREATE TABLE feedback(time TEXT, user TEXT, feedback TEXT, FOREIGN KEY(user) REFERENCES contact(phone))');
+  }
+  else {
+    $db = new \PDO("sqlite:" . $contactsDB, null, null, array(PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
+  }
+  $sql = 'INSERT INTO feedback (`time`, `user`,`feedback`) VALUES (:time, :user, :feedback)';
+  $query = $db->prepare($sql);
+
+  $query->execute(
+      array(
+          ':time' => date("Y-m-d H:i:s"),
+          ':user' => $contact,
+          ':feedback' => $feedback
+      )
+  );
+    
+}
+
 function getLatestMessages($phone)
 {
   $msgDB = $GLOBALS["msg_db"];

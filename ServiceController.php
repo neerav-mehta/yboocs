@@ -5,6 +5,9 @@ include 'Services/Railway.php';
 include 'Services/Cricket.php'; 
 include 'Services/Shopping.php'; 
 include 'Services/VAS.php'; 
+include 'Services/Weather.php';
+include 'Services/Feedback.php';
+include 'Services/Movie.php';
 function searchElement($from, $searchElement,$property)
    {
       foreach ($from as $key=>$value)
@@ -44,6 +47,9 @@ class ServiceController{
         {
             $SubMenuDict = GenieConstants::$MAIN_MENU_CONTEXT[$context['main_menu']]->subMenu;                    
             $postServiceMessage = $SubMenuDict[$context['sub_menu']]->postServiceMessage;
+            echo "\n\n\n";
+            var_dump($SubMenuDict);
+            var_dump($context);
             MessaggingController::sendMessage($requester, $postServiceMessage);
             $anythingElse = GenieConstants::$anyThingElse;
             MessaggingController::sendMessage($requester, $anythingElse);  
@@ -76,10 +82,12 @@ class ServiceController{
     
     static function handleShortCuts($requester,$requestArray)
     {
-        updateMessageContext(GenieConstants::$MAIN_MENU_CONTEXT, NULL, $requester['phone']);
-        if($requestArray[0] = "#mainmenu")
+        updateMessageContext('0', NULL, $requester['phone']);
+        $isServiceFound = false;
+        if($requestArray[0] == "#mainmenu")
         {
-            MessaggingController::sendMessage($requester, GenieConstants::$MAIN_MENU_STRING);        
+            MessaggingController::sendMessage($requester, GenieConstants::$MAIN_MENU_STRING);  
+            return;
         }
         foreach (GenieConstants::$MAIN_MENU_CONTEXT as $key=>$value)
         {
@@ -100,11 +108,17 @@ class ServiceController{
                      echo "\n\n\n\n";
                         $requestString  = implode(" ",$requestArray);
                         PubSub::publish($value->menuItem,$callback,$requester,$requestString); 
+                        $isServiceFound = true;
                         return;
                     }
                 }
             }
-        }    
+        }
+        if (!$isServiceFound) {
+            MessaggingController::sendMessage($contact, GenieConstants::$INVALID_SERVICE);
+        }
+        
+
     }
     static function handleMessageReceived($mynumber, $from, $id, $type, $time, $name, $body)
     {
@@ -147,6 +161,7 @@ class ServiceController{
                     }
                     else {
                         MessaggingController::sendMessage($contact, GenieConstants::$INVALID_SERVICE);
+                        MessaggingController::sendMessage($contact, GenieConstants::$MAIN_MENU_STRING);
                     }
                     return;
                 }
@@ -163,6 +178,7 @@ class ServiceController{
                     }
                     else {
                         MessaggingController::sendMessage($contact, GenieConstants::$INVALID_SERVICE);
+                        PubSub::publish(GenieConstants::$MAIN_MENU_CONTEXT[$context['main_menu']]->menuItem,$callBackFunction,$contact); 
                     }
                     return;
                 }

@@ -23,11 +23,9 @@ class Railway
     public static $askForLiveStatusQuestion = "Please enter the train number and date for live running status in following format.\n<train-number>,<date(dd/mm/yyyy)>";
     public static $liveStatusFormat = 'For ex. if you want live status for train number 12201 on 2nd July 2015, you need to enter n "12201,02/07/2015"';
     public static $RAILWAY_WELCOME_MESSAGE = "Welcome to the Railway helpline.";
-    public static $RAILWAY_OPTIONS_MENU = "Please choose the desired option:\n
-                         1 for PNR Status \n
-                         2 for Train Live Running Status \n
-                         3 for Seat Availablility \n
-                         4 to connect to the live agent";
+    public static $RAILWAY_OPTIONS_MENU = "Please choose the desired option:
+        1 for PNR Status
+        2 for Train Live Running Status";
     public static $mainMenuRedirectString = "Anytime you can type #mainmenu to go to the main menu";
 
 
